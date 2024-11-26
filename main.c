@@ -1,73 +1,157 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct lista{
-    int numero;
-    struct lista * next;
+struct lista
+{
+    int info;
+    struct lista *next;
 };
 
 typedef struct lista Lista;
 
-Lista * incializarLista(){
+Lista *iniciarLista(){
     return NULL;
 }
 
-Lista * inserirLista(Lista * pL, int numero){
-    Lista * novo;
+Lista *inserirInicio(Lista *pL, int info){
+    Lista *novo;
     novo = (Lista *)malloc(sizeof(Lista));
-    if(novo == NULL){
-        printf("Erro ao alocar memoraia...\n");
-    }
-    else{
-        novo->numero = numero;
+    if(novo != NULL){
+        novo->info = info;
         novo->next = pL;
         return novo;
     }
+    else
+        printf("Erro ao alocar memoria...\n");
 }
 
-Lista * imprimirLista(Lista * pL){
+
+Lista *inserirFinal(Lista *pL, int info){
+    Lista *novo;
+    Lista *aux;
+    novo = (Lista *)malloc(sizeof(Lista));
+    
+    if(novo != NULL){
+        novo->info = info;
+        novo->next = NULL;
+
+        if(pL == NULL){
+            pL = novo;
+        }
+        else{
+            aux = pL;
+            while(aux->next != NULL){
+                aux = aux->next;
+            }
+            aux->next = novo;
+        }
+        return pL;
+    }
+    else{
+        printf("erro ao alocar memoria...\n");
+    }
+
+}
+
+Lista *inserirMeio(Lista *pL, int info, int anterior){
+    Lista *novo;
+    Lista *aux;
+    novo = (Lista *)malloc(sizeof(Lista));
+    if(novo != NULL){
+        novo->info = info;
+        if (pL == NULL)
+        {
+            novo->next = NULL;
+            pL = novo;
+        }
+        else{
+            aux = pL;
+            while (aux->next != NULL && aux->info != anterior)
+            {
+                aux = aux->next;
+            }
+            novo->next = aux->next;
+            aux->next = novo;
+            
+        }
+    }
+    else{
+        printf("erro ao aloca memoria...");
+    }
+    return pL;
+}
+
+Lista *inserirOrdenado(Lista *pL, int info){
+    Lista *novo, *aux, *anterior = NULL;
+    novo = (Lista *)malloc(sizeof(Lista));
+
+    if(novo == NULL){
+        printf("erro ao alocar memoria...");
+        return pL;
+    }
+    
+    novo->info = info;
+    
+    if(pL == NULL || pL->info >= info){
+        novo->next = pL;
+        pL = novo;
+        return pL;
+    }
+
+    aux = pL;
+    while(aux != NULL && aux->info < info){
+        anterior = aux;
+        aux = aux->next;
+    }
+    anterior->next = novo;
+    novo->next = aux;
+    return pL;
+
+}
+
+void imprirmirLista(Lista *pL){
     while(pL != NULL){
-        printf("[%d] -> ", pL->numero);
+        printf("%d -> ", pL->info);
         pL = pL->next;
     }
     printf("\n");
 }
 
-Lista * separarLista(Lista * pL, int n){
-    Lista * pAux = pL;
-    Lista * pL2 = NULL;
-
-    while (pAux != NULL)
-    {
-        if(pAux->numero == n){
-            pL2 = pAux->next;
-            pAux->next = NULL;
-            return pL2;
-        }
-        pAux = pAux->next;
-    }
-    
-}
 
 int main(){
+    int info, count = 0;
     Lista * L;
-    Lista * L2;
-
-    L = incializarLista();
     
-    L = inserirLista(L, 32);
-    L = inserirLista(L, 16);
-    L = inserirLista(L, 8);
-    L = inserirLista(L, 4);
-    L = inserirLista(L, 2);
+    L = iniciarLista();
 
-    imprimirLista(L);
+    for(int i = 0; i < 5; i++){
+    printf("Digiet um numero para adicionar na lista: ");
+    scanf("%d", &info);
+    count++;
+    L= inserirOrdenado(L, info);
+    }
 
-    L2 = separarLista(L ,8);
+    imprirmirLista(L);
 
-    imprimirLista(L);
-    imprimirLista(L2);
+
     
+    L = inserirMeio(L, 50, 0);
+    count++;
+    imprirmirLista(L);
+    L = inserirInicio(L, 10);
+    count++;
+    imprirmirLista(L);
+    L = inserirInicio(L, 20);
+    count++;
+    imprirmirLista(L);
+    L = inserirFinal(L, 30);
+    count++;
+    imprirmirLista(L);
+    L = inserirMeio(L, 40, 10);
+    count++;
+    imprirmirLista(L);
 
+    printf("Foram inseridos [%d] dados na lista.", count);
+    
     return 0;
 }
